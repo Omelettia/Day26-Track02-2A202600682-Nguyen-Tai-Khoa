@@ -27,7 +27,7 @@ start_agent database_agent 8002
 start_agent synthesis_agent 8003
 
 echo "Đợi server khởi động..."
-for i in 1 2 3 4 5; do
+for i in $(seq 1 15); do
   sleep 2
   if curl -sf http://localhost:8001/.well-known/agent-card.json >/dev/null 2>&1 \
      && curl -sf http://localhost:8002/.well-known/agent-card.json >/dev/null 2>&1 \

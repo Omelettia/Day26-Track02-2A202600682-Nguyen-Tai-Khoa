@@ -24,9 +24,12 @@ resolve_lab_python() {
   local root="${1:-.}"
   local c candidates=()
 
-  # Ưu tiên conda (pii-env) — lab không dùng .venv
+  # Ưu tiên env đang active; fallback sang .venv nếu máy không có conda.
   if [[ -n "${CONDA_PREFIX:-}" && -x "${CONDA_PREFIX}/bin/python" ]]; then
     candidates+=("${CONDA_PREFIX}/bin/python")
+  fi
+  if [[ -x "$root/.venv/bin/python" ]]; then
+    candidates+=("$root/.venv/bin/python")
   fi
   if command -v python >/dev/null 2>&1; then
     candidates+=("$(command -v python)")
@@ -50,8 +53,8 @@ setup_lab_env() {
   load_dotenv_file "$root"
   LAB_PYTHON="$(resolve_lab_python "$root")" || {
     echo "✗ Không tìm thấy Python có google-adk."
-    echo "  Chạy: conda activate pii-env"
-    echo "  Rồi: pip install -r requirements.txt"
+    echo "  Chạy: python3 -m venv .venv"
+    echo "  Rồi: .venv/bin/pip install -r requirements.txt"
     exit 1
   }
   export PYTHONPATH="${PYTHONPATH:-}:$root"
